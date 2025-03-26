@@ -9,6 +9,9 @@ import org.springframework.data.repository.query.Param;
 
 import com.fct.peluqueria.models.Usuario;
 
+/**
+ * Clase que se encarga de las operaciones a la BBDD de la tabla usuarios
+ */
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
   @Query("SELECT u FROM Usuario u WHERE u.email = :email")

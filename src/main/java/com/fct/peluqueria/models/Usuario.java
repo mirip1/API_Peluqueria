@@ -34,6 +34,9 @@ public class Usuario {
   @Column(nullable = false, length = 100)
   private String nombre;
 
+  @Column(nullable = false, length = 15)
+  private String telefono;
+
   @Column(nullable = false, length = 100)
   private String apellidos;
 
@@ -53,4 +56,3 @@ public class Usuario {
   @Column(nullable = false)
   private Boolean baneado;
 }
-

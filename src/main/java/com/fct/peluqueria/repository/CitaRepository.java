@@ -11,6 +11,9 @@ import com.fct.peluqueria.constants.EstadoCita;
 import com.fct.peluqueria.models.Cita;
 import com.fct.peluqueria.models.Usuario;
 
+/**
+ * Clase que se encarga de las operaciones a la BBDD de la tabla citas
+ */
 public interface CitaRepository extends JpaRepository<Cita, Integer> {
 
   @Query("SELECT c FROM Cita c WHERE c.usuario = :usuario AND c.estado = :estado")

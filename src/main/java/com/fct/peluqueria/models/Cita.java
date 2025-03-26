@@ -44,5 +44,3 @@ public class Cita {
   @Column(nullable = false)
   private EstadoCita estado;
 }
-
-

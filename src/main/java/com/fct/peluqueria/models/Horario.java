@@ -46,4 +46,3 @@ public class Horario {
   @Column(nullable = false)
   private EstadoHorario estado;
 }
-

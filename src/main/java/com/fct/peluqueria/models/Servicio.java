@@ -33,5 +33,3 @@ public class Servicio {
   @Column(nullable = false, precision = 10, scale = 2)
   private BigDecimal precio;
 }
-
-

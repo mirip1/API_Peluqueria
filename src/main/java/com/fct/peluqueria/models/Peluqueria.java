@@ -34,4 +34,3 @@ public class Peluqueria {
   @Column(length = 255)
   private String ubicacion;
 }
-

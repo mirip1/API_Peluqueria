@@ -9,6 +9,9 @@ import org.springframework.data.repository.query.Param;
 import com.fct.peluqueria.constants.DiaSemana;
 import com.fct.peluqueria.models.Horario;
 
+/**
+ * Clase que se encarga de las operaciones a la BBDD de la tabla horario
+ */
 public interface HorarioRepository extends JpaRepository<Horario, Integer> {
 
   @Query("SELECT h FROM Horario h WHERE h.diaSemana = :diaSemana ORDER BY h.horaInicio")

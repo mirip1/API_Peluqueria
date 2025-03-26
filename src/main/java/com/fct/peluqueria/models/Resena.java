@@ -42,5 +42,3 @@ public class Resena {
   @Column(nullable = false)
   private LocalDateTime fecha;
 }
-
-
