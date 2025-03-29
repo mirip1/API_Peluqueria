@@ -1,6 +1,6 @@
 package com.fct.peluqueria.dto;
 
-import java.beans.JavaBean;
+import com.fct.peluqueria.constants.Rol;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +22,7 @@ public class UsuarioDTO {
   private String apellidos;
   private String email;
   private String telefono;
-  private String rol;
+  private Rol rol;
   private Boolean baneado;
 
 }
