@@ -47,10 +47,10 @@ public class Usuario {
   private String password;
 
   @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
+  @Column(nullable = true)
   private Rol rol;
 
-  @Column(name = "fecha_creacion", nullable = false)
+  @Column(name = "fecha_creacion", nullable = true)
   private LocalDateTime fechaCreacion;
 
   @Column(nullable = false)

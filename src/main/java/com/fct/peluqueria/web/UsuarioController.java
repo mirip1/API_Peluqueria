@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fct.peluqueria.dto.LoginDTO;
+import com.fct.peluqueria.dto.RegistroDTO;
 import com.fct.peluqueria.dto.UsuarioDTO;
 import com.fct.peluqueria.service.UsuarioService;
 
@@ -30,8 +31,8 @@ public class UsuarioController {
      * @return respuesta de la llamada
      */
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody UsuarioDTO usuarioDTO) {
-        return ResponseEntity.ok(usuarioService.register(usuarioDTO));
+    public ResponseEntity<?> register(@RequestBody RegistroDTO register) {
+        return ResponseEntity.ok(usuarioService.register(register));
     }
     
     
