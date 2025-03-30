@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fct.peluqueria.dto.LoginDTO;
 import com.fct.peluqueria.dto.RegistroDTO;
-import com.fct.peluqueria.dto.UsuarioDTO;
 import com.fct.peluqueria.service.UsuarioService;
 
 /**
@@ -48,7 +47,7 @@ public class UsuarioController {
     
     
     /**
-     * Metodo obtiene el perdil de usuario ya autentificado
+     * Metodo obtiene el perfil de usuario ya autentificado
      * @param principal
      * @return
      */

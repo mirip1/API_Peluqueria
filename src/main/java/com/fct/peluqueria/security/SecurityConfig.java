@@ -27,8 +27,12 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                
-                .requestMatchers("/api/usuarios/register").authenticated()
+                .requestMatchers("/api/usuarios/**").permitAll()
                 .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .usernameParameter("email") 
+                .defaultSuccessUrl("/api/usuarios/profile", true)
             )
             .httpBasic(Customizer.withDefaults()); 
 
