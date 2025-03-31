@@ -2,6 +2,7 @@ package com.fct.peluqueria.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,8 +35,9 @@ public class PeluqueriaController {
     /**
      * Metodo para actualizar la informacion de la peluqueria
      * @param peluqueriaDTO JSON con la informacion de la peluqueria
-     * @return la respuesta de la llamada
+     * @return la respuesta de la llamada si el cliente es un admin
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping
     public ResponseEntity<?> updatePeluqueria(@RequestBody PeluqueriaDTO peluqueriaDTO) {
         return ResponseEntity.ok(peluqueriaService.updatePeluqueria(peluqueriaDTO));

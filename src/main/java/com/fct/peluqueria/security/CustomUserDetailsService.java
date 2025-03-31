@@ -16,21 +16,26 @@ import com.fct.peluqueria.repository.UsuarioRepository;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
-    
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-    
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        try {
-            Usuario usuario = usuarioRepository.findByEmail(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
-            
-            List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
-            
-            return new User(usuario.getEmail(), usuario.getPassword(), authorities);
-        } catch (Exception e) {
-            throw new UsernameNotFoundException("Error al cargar usuario: " + e.getMessage());
-        }
+
+  @Autowired
+  private UsuarioRepository usuarioRepository;
+
+  @Override
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    try {
+      Usuario usuario = usuarioRepository.findByEmail(username)
+          .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
+
+      List<GrantedAuthority> authorities;
+      if ("Rol.ADMIN".equalsIgnoreCase(usuario.getRol().toString())) {
+//        System.out.println("llega hasta aqui :D");
+        authorities = List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
+      } else {
+        authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
+      }
+      return new User(usuario.getEmail(), usuario.getPassword(), authorities);
+    } catch (Exception e) {
+      throw new UsernameNotFoundException("Error al cargar usuario: " + e.getMessage());
     }
+  }
 }
