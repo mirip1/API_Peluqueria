@@ -4,8 +4,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 import com.fct.peluqueria.constants.Rol;
+import com.fct.peluqueria.dto.PeluqueriaDTO;
 import com.fct.peluqueria.dto.RegistroDTO;
 import com.fct.peluqueria.dto.UsuarioDTO;
+import com.fct.peluqueria.models.Peluqueria;
 import com.fct.peluqueria.models.Usuario;
 
 /**
@@ -47,5 +49,22 @@ public class ConverterUtil {
         .baneado(usuario.getBaneado())
         .build();
   }
+  
+  /**
+   * Convierte de Peluqueria a PeluqueriaDTO
+   * @param peluqueria el Objeto a convertir
+   * @return PeluqueriaDTO relleno
+   */
+  public static PeluqueriaDTO peluqueriaToPeluqueriaDTO(Peluqueria peluqueria) {
+    return PeluqueriaDTO.builder()
+        .id(peluqueria.getId())
+        .nombre(peluqueria.getNombre())
+        .descripcion(peluqueria.getDescripcion())
+        .ubicacion(peluqueria.getUbicacion())
+        .build();
+
+  }
+  
+  
 
 }

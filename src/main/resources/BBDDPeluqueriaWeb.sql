@@ -2,6 +2,8 @@ drop schema peluqueria_web;
 create schema peluqueria_web;
 use peluqueria_web;
 
+-- Tablas
+
 create table usuarios (
     id int auto_increment primary key,
     nombre varchar(100) not null,
@@ -53,6 +55,7 @@ create table peluqueria (
     ubicacion varchar(255)
 );
 
+-- Triggers
 
 DELIMITER //
 create trigger trigger_limite_cita before insert on citas
@@ -77,3 +80,13 @@ begin
 end;
 //
 DELIMITER ;
+
+-- Datos de prueba
+
+insert into peluqueria (nombre, descripcion, ubicacion)
+values ('PeluqueriaEjemp', 'Peluqueria de prueba ', 'Calle Ejemplo, 123, Ciudad, Pais');
+
+INSERT INTO usuarios (nombre, apellidos, email, password, rol, fecha_creacion, baneado, telefono)
+VALUES ('Admin', 'Test', 'admin@example.com', '$2a$12$67UmkMD6wFegStulo66QQe6HE8VynOJ6UKrgh76ViQekruXoGxpai', 'ADMIN', CURRENT_TIMESTAMP, 0, '123456788');
+
+
