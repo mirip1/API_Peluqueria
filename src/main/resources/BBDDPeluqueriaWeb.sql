@@ -89,4 +89,9 @@ values ('PeluqueriaEjemp', 'Peluqueria de prueba ', 'Calle Ejemplo, 123, Ciudad,
 INSERT INTO usuarios (nombre, apellidos, email, password, rol, fecha_creacion, baneado, telefono)
 VALUES ('Admin', 'Test', 'admin@example.com', '$2a$12$67UmkMD6wFegStulo66QQe6HE8VynOJ6UKrgh76ViQekruXoGxpai', 'ADMIN', CURRENT_TIMESTAMP, 0, '123456788');
 
+INSERT INTO servicios (nombre, precio) VALUES ('Corte de Pelo', 15.00);
+INSERT INTO servicios (nombre, precio) VALUES ('Tinte', 30.00);
+INSERT INTO servicios (nombre, precio) VALUES ('Peinado', 20.00);
+
+
 
