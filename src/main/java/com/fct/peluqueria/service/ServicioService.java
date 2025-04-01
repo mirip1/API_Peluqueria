@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fct.peluqueria.converter.ConverterUtil;
 import com.fct.peluqueria.dto.ServicioDTO;
 import com.fct.peluqueria.models.Servicio;
 import com.fct.peluqueria.repository.ServicioRepository;
@@ -19,8 +20,7 @@ public class ServicioService {
   public List<ServicioDTO> getAllServicios() {
     List<Servicio> servicios = servicioRepository.findAll();
     return servicios.stream()
-        .map(servicio -> new ServicioDTO(servicio.getId(), servicio.getNombre(), servicio.getPrecio()))
+        .map(servicio -> ConverterUtil.servicioToServicioDTO(servicio))
         .collect(Collectors.toList());
   }
-
 }
