@@ -30,6 +30,12 @@ public class CitaService {
      * @return El CitaDTO resultante tras guardar la cita.
      */
     public CitaDTO crearCita(CitaDTO citaDTO) {
+      //Si ya existe un acita con las mismas características pero cancelada la eliminamos
+      citaRepository
+          .findByUsuarioIdAndFechaYHoraAndEstado(citaDTO.getUsuarioId(), citaDTO.getFechaYHora(), EstadoCita.CANCELADA)
+          .ifPresent(citaCancelada -> {
+            citaRepository.delete(citaCancelada);
+          });
       Cita cita = ConverterUtil.citaDTOToCita(citaDTO, usuarioRepository);
         if (cita.getEstado() == null) {
             cita.setEstado(EstadoCita.ACTIVA);

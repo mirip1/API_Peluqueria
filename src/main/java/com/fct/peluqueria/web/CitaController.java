@@ -48,7 +48,7 @@ public class CitaController {
   }
 
   /**
-   * Metodo que actualiza el estado de una cita (El usuario)
+   * Metodo que actualiza el estado de una cita(El usuario)
    * 
    * @param id identificador de la cita
    * @return respuesta de la llamada
