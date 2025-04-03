@@ -3,16 +3,20 @@ package com.fct.peluqueria.converter;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+import com.fct.peluqueria.constants.EstadoCita;
 import com.fct.peluqueria.constants.Rol;
+import com.fct.peluqueria.dto.CitaDTO;
 import com.fct.peluqueria.dto.PeluqueriaDTO;
 import com.fct.peluqueria.dto.RegistroDTO;
 import com.fct.peluqueria.dto.ResenaDTO;
 import com.fct.peluqueria.dto.ServicioDTO;
 import com.fct.peluqueria.dto.UsuarioDTO;
+import com.fct.peluqueria.models.Cita;
 import com.fct.peluqueria.models.Peluqueria;
 import com.fct.peluqueria.models.Resena;
 import com.fct.peluqueria.models.Servicio;
 import com.fct.peluqueria.models.Usuario;
+import com.fct.peluqueria.repository.UsuarioRepository;
 
 /**
  * Clase para realizar conversiones de Objetos
@@ -114,6 +118,42 @@ public class ConverterUtil {
         .build();
 
     return resena;
+  }
+  
+  /**
+   * Convierte un objeto Cita a CitaDTO.
+   * @param cita el Objeto a convertir
+   * @return CitaDTO relleno
+   */
+  public static CitaDTO citaToCitaDTO(Cita cita) {
+    return CitaDTO.builder()
+          .id(cita.getId())
+          .fechaYHora(cita.getFechaYHora())
+          .estado(cita.getEstado() != null ? cita.getEstado().name() : null)
+          .usuarioId(cita.getUsuario().getId())
+          .build();
+  }
+
+  /**
+   * Convierte un objeto CitaDTO a Cita.
+   * @param dto el Objeto a convertir
+   * @return Cita relleno
+   */
+  public static Cita citaDTOToCita(CitaDTO dto, UsuarioRepository usuarioRepository) {
+    Cita cita = new Cita();
+    cita.setId(dto.getId());
+    cita.setFechaYHora(dto.getFechaYHora() != null ? dto.getFechaYHora() : LocalDateTime.now());
+    if (dto.getEstado() != null) {
+      System.out.println(EstadoCita.valueOf(dto.getEstado().toUpperCase()));
+      cita.setEstado(EstadoCita.valueOf(dto.getEstado().toUpperCase()));
+    }
+    if (dto.getUsuarioId() != null) {
+      Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
+          .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + dto.getUsuarioId()));
+      cita.setUsuario(usuario);
+
+    }
+    return cita;
   }
 
 }
