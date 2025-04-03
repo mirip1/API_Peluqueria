@@ -21,7 +21,7 @@ create table citas (
     usuario_id int not null,
     fecha_y_hora datetime not null,
 
-    estado enum('activa', 'cancelada', 'finalizada') not null default 'activa',
+    estado enum('ACTIVA', 'CANCELADA', 'FINALIZADA') not null default 'ACTIVA',
     constraint fk_usuario foreign key (usuario_id) references usuarios (id) on delete cascade
 );
 
@@ -33,10 +33,10 @@ create table servicios (
 
 create table horarios (
     id int auto_increment primary key,
-    dia_semana enum('lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo') not null,
+    dia_semana enum('LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO', 'DOMINGO') not null,
     hora_inicio time not null,
     hora_fin time not null,
-    estado enum('disponible', 'no_disponible') not null default 'disponible'
+    estado enum('DISPONIBLE', 'NO_DISPONIBLE') not null default 'DISPONIBLE'
 ) ;
 
 create table resenas (
@@ -80,6 +80,36 @@ begin
 end;
 //
 DELIMITER ;
+
+DELIMITER //
+
+CREATE TRIGGER trigger_cita_cancelada AFTER UPDATE ON citas
+FOR EACH ROW
+BEGIN
+	DECLARE dia VARCHAR(10);
+    IF NEW.estado = 'CANCELADA' AND OLD.estado <> 'CANCELADA' THEN
+        -- Convertir el día de la semana de la cita (usando DAYOFWEEK, donde 1 = domingo, 2 = lunes, etc.)
+        SET dia = CASE DAYOFWEEK(NEW.fecha_y_hora)
+                     WHEN 1 THEN 'DOMINGO'
+                     WHEN 2 THEN 'LUNES'
+                     WHEN 3 THEN 'MARTES'
+                     WHEN 4 THEN 'MIERCOLES'
+                     WHEN 5 THEN 'JUEVES'
+                     WHEN 6 THEN 'VIERNES'
+                     WHEN 7 THEN 'SABADO'
+                  END;
+-- Actualizar el estado del horario correspondiente al día y la hora de la cita cancelada.
+UPDATE horarios 
+SET 
+    estado = 'DISPONIBLE'
+WHERE
+    dia_semana = dia
+        AND hora_inicio = TIME(NEW.fecha_y_hora)
+    END IF;
+END;
+//
+DELIMITER ;
+
 
 -- Datos de prueba
 

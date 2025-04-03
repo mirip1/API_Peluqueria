@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,12 +48,12 @@ public class CitaController {
   }
 
   /**
-   * Metodo que elimina una cita (El usuario)
+   * Metodo que actualiza el estado de una cita (El usuario)
    * 
    * @param id identificador de la cita
    * @return respuesta de la llamada
    */
-  @DeleteMapping("/{id}")
+  @PutMapping("/{id}")
   public ResponseEntity<?> cancelarCita(@PathVariable Integer id) {
     citaService.cancelarCita(id);
     return ResponseEntity.noContent().build();
