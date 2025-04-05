@@ -1,5 +1,8 @@
 package com.fct.peluqueria.dto;
 
+import com.fct.peluqueria.constants.DiaSemana;
+import com.fct.peluqueria.constants.EstadoHorario;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,8 +19,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class HorarioDTO {
   private Integer id;
-  private String diaSemana;
+  private DiaSemana diaSemana;
   private String horaInicio;
   private String horaFin;
-  private String estado;
+  private EstadoHorario estado;
 }
