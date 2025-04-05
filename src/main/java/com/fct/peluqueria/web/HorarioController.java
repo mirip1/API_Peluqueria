@@ -29,7 +29,7 @@ public class HorarioController {
      * @return respuesta de la llamada
      */
     @GetMapping("/{dia}")
-    public ResponseEntity<?> getHorariosPorDia(@PathVariable("dia") DiaSemana dia) {
+    public ResponseEntity<?> getHorariosPorDia(@PathVariable("dia") String dia) {
         return ResponseEntity.ok(horarioService.getHorariosPorDia(dia));
     }
 

@@ -2,16 +2,19 @@ package com.fct.peluqueria.converter;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 import com.fct.peluqueria.constants.EstadoCita;
 import com.fct.peluqueria.constants.Rol;
 import com.fct.peluqueria.dto.CitaDTO;
+import com.fct.peluqueria.dto.HorarioDTO;
 import com.fct.peluqueria.dto.PeluqueriaDTO;
 import com.fct.peluqueria.dto.RegistroDTO;
 import com.fct.peluqueria.dto.ResenaDTO;
 import com.fct.peluqueria.dto.ServicioDTO;
 import com.fct.peluqueria.dto.UsuarioDTO;
 import com.fct.peluqueria.models.Cita;
+import com.fct.peluqueria.models.Horario;
 import com.fct.peluqueria.models.Peluqueria;
 import com.fct.peluqueria.models.Resena;
 import com.fct.peluqueria.models.Servicio;
@@ -155,5 +158,16 @@ public class ConverterUtil {
     }
     return cita;
   }
+  
+  public static HorarioDTO horarioToHorarioDTO(Horario horario) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+    return HorarioDTO.builder()
+        .id(horario.getId())
+        .diaSemana(horario.getDiaSemana())
+        .horaInicio(horario.getHoraInicio() != null ? horario.getHoraInicio().format(formatter) : null)
+        .horaFin(horario.getHoraFin() != null ? horario.getHoraFin().format(formatter) : null)
+        .estado(horario.getEstado() != null ? horario.getEstado() : null)
+        .build();
+}
 
 }
