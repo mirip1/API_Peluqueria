@@ -1,6 +1,7 @@
 package com.fct.peluqueria.converter;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
@@ -14,7 +15,8 @@ import com.fct.peluqueria.dto.ResenaDTO;
 import com.fct.peluqueria.dto.ServicioDTO;
 import com.fct.peluqueria.dto.UsuarioDTO;
 import com.fct.peluqueria.models.Cita;
-import com.fct.peluqueria.models.Horario;
+import com.fct.peluqueria.models.HorarioBase;
+import com.fct.peluqueria.models.HorarioExcepcion;
 import com.fct.peluqueria.models.Peluqueria;
 import com.fct.peluqueria.models.Resena;
 import com.fct.peluqueria.models.Servicio;
@@ -25,6 +27,8 @@ import com.fct.peluqueria.repository.UsuarioRepository;
  * Clase para realizar conversiones de Objetos
  */
 public class ConverterUtil {
+  
+  public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
   
   /**
    * Convierte del RegistroDTO a usuario, pero sin la contraseña
@@ -159,15 +163,41 @@ public class ConverterUtil {
     return cita;
   }
   
-  public static HorarioDTO horarioToHorarioDTO(Horario horario) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-    return HorarioDTO.builder()
-        .id(horario.getId())
+  /**
+   * Convierte un objeto HorarioBase a HorarioDTO.
+   * @param el Objeto a convertir
+   * @return HorarioDTO relleno
+   */
+  public static HorarioDTO horarioBaseToHorarioDTO(HorarioBase horario) {
+    return HorarioDTO.builder().
+        id(horario.getId())
         .diaSemana(horario.getDiaSemana())
-        .horaInicio(horario.getHoraInicio() != null ? horario.getHoraInicio().format(formatter) : null)
-        .horaFin(horario.getHoraFin() != null ? horario.getHoraFin().format(formatter) : null)
-        .estado(horario.getEstado() != null ? horario.getEstado() : null)
-        .build();
-}
+        .horaInicio(horario.getHoraInicio() != null ? horario.getHoraInicio().format(TIME_FORMATTER) : null)
+        .horaFin(horario.getHoraFin() != null ? horario.getHoraFin().format(TIME_FORMATTER) : null)
+        .estado(horario.getEstado() != null ? horario.getEstado() : null).build();
+  }
+  
+  
+  /**
+   * Convierte un objeto HorarioExcepcion a HorarioDTO.
+   * @param el Objeto a convertir
+   * @return HorarioDTO relleno
+   */
+  public static HorarioDTO horarioExcepcionToHorarioDTO(HorarioExcepcion excepcion) {
+    return HorarioDTO.builder()
+        .id(excepcion.getId()).diaSemana(excepcion.getDiaSemana())
+        .horaInicio(excepcion.getHoraInicio() != null ? excepcion.getHoraInicio().format(TIME_FORMATTER) : null)
+        .horaFin(excepcion.getHoraFin() != null ? excepcion.getHoraFin().format(TIME_FORMATTER) : null)
+        .estado(excepcion.getEstado() != null ? excepcion.getEstado() : null).build();
+  }
+  
+ /**
+  * Pasa una cadena que contiene la informaciond e una hora a LocalTime
+  * @param timeStr cadena de la hora
+  * @return la hora en LocalTime
+  */
+  public static LocalTime parseLocalTime(String timeStr) {
+    return LocalTime.parse(timeStr, TIME_FORMATTER);
+  }
 
 }
