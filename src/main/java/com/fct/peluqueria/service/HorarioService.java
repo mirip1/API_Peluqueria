@@ -1,63 +1,124 @@
 package com.fct.peluqueria.service;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fct.peluqueria.constants.EstadoHorario;
+import com.fct.peluqueria.constants.DiaSemana;
 import com.fct.peluqueria.converter.ConverterUtil;
 import com.fct.peluqueria.dto.HorarioDTO;
-import com.fct.peluqueria.models.Horario;
-import com.fct.peluqueria.repository.HorarioRepository;
+import com.fct.peluqueria.models.HorarioBase;
+import com.fct.peluqueria.models.HorarioExcepcion;
+import com.fct.peluqueria.repository.HorarioBaseRepository;
+import com.fct.peluqueria.repository.HorarioExcepcionRepository;
 
 @Service
 public class HorarioService {
 
-  @Autowired
-  private HorarioRepository horarioRepository;
+    @Autowired
+    private HorarioBaseRepository horarioBaseRepository;
 
-  /**
-   * Obtiene la lista de horarios para un día específico.
-   *
-   * @param diaSemana El día de la semana .
-   * @return Lista de HorarioDTO para ese día.
-   */
-  public List<HorarioDTO> getHorariosPorDia(String diaSemana) {
-    // Convertimos el día a mayúsculas para asegurar coincidencia con la BBDD
-    List<Horario> horarios = horarioRepository.findByDiaSemana(diaSemana.toUpperCase());
-    return horarios.stream().map(ConverterUtil::horarioToHorarioDTO).collect(Collectors.toList());
-  }
+    @Autowired
+    private HorarioExcepcionRepository horarioExcepcionRepository;
 
-  /**
-   * Actualiza un horario existente.
-   *
-   * @param id         El identificador del horario a actualizar.
-   * @param horarioDTO Los nuevos datos del horario.
-   * @return El HorarioDTO actualizado.
-   */
-  public HorarioDTO updateHorario(Integer id, HorarioDTO horarioDTO) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-    Horario horario = horarioRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Horario no encontrado con id: " + id));
-    
-    if (horarioDTO.getDiaSemana() != null) {
-      horario.setDiaSemana(horarioDTO.getDiaSemana());
-    }
-    if (horarioDTO.getHoraInicio() != null) {
-      horario.setHoraInicio(LocalTime.parse(horarioDTO.getHoraInicio(), formatter));
-    }
-    if (horarioDTO.getHoraFin() != null) {
-      horario.setHoraFin(LocalTime.parse(horarioDTO.getHoraFin(), formatter));
-    }
-    if (horarioDTO.getEstado() != null) {
-      horario.setEstado(horarioDTO.getEstado());
-    }
-    Horario updated = horarioRepository.save(horario);
-    return ConverterUtil.horarioToHorarioDTO(updated);
-  }
+    /**
+     * Obtiene la disponibilidad de horarios para una fecha específica.
+     * Se toma el horario base del día de la semana y se aplican las excepciones registradas para esa fecha.
+     *
+     * @param fecha la fecha para la que se consulta la disponibilidad.
+     * @return Lista de HorarioDTO resultante.
+     */
+    public List<HorarioDTO> obtenerHorariosPorFecha(LocalDate fecha) {
+        DayOfWeek dow = fecha.getDayOfWeek();
+        DiaSemana diaSemana = convertDayOfWeekToDiaSemana(dow);
 
+        // Obtener horarios base para ese día
+        List<HorarioBase> horariosBase = horarioBaseRepository.findByDiaSemana(diaSemana);
+        List<HorarioDTO> horarios = horariosBase.stream()
+                .map(ConverterUtil::horarioBaseToHorarioDTO)
+                .collect(Collectors.toList());
+
+        List<HorarioExcepcion> excepciones = horarioExcepcionRepository.findByFecha(fecha);
+
+        for (HorarioExcepcion excepcion : excepciones) {
+            horarios = horarios.stream().map(h -> {
+                if (h.getHoraInicio().equals(excepcion.getHoraInicio().format(ConverterUtil.TIME_FORMATTER)) &&
+                    h.getHoraFin().equals(excepcion.getHoraFin().format(ConverterUtil.TIME_FORMATTER))) {
+                    h.setEstado(excepcion.getEstado());
+                }
+                return h;
+            }).collect(Collectors.toList());
+        }
+
+        return horarios;
+    }
+
+    /**
+     * Actualiza un horario base existente.
+     *
+     * @param id el identificador del horario base.
+     * @param horarioDTO los nuevos datos para el horario.
+     * @return el horario base actualizado en forma de DTO.
+     */
+    public HorarioDTO updateHorarioBase(Integer id, HorarioDTO horarioDTO) {
+        HorarioBase horario = horarioBaseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Horario base no encontrado con id: " + id));
+
+        horario.setDiaSemana(horarioDTO.getDiaSemana());
+        horario.setHoraInicio(ConverterUtil.parseLocalTime(horarioDTO.getHoraInicio()));
+        horario.setHoraFin(ConverterUtil.parseLocalTime(horarioDTO.getHoraFin()));
+        if (horarioDTO.getEstado() != null) {
+            horario.setEstado(horarioDTO.getEstado());
+        }
+        HorarioBase updated = horarioBaseRepository.save(horario);
+        return ConverterUtil.horarioBaseToHorarioDTO(updated);
+    }
+
+    /**
+     * Agrega una excepción de horario para una fecha específica.
+     *
+     * @param excepcionDTO el DTO con la información de la excepción.
+     * @param fecha la fecha en la que se aplica la excepción.
+     * @return el DTO de la excepción creada.
+     */
+    public HorarioDTO addExcepcionHorario(HorarioDTO excepcionDTO, LocalDate fecha) {
+        HorarioExcepcion excepcion = HorarioExcepcion.builder()
+                .fecha(fecha)
+                .horaInicio(ConverterUtil.parseLocalTime(excepcionDTO.getHoraInicio()))
+                .horaFin(ConverterUtil.parseLocalTime(excepcionDTO.getHoraFin()))
+                .estado(excepcionDTO.getEstado())
+                .diaSemana(excepcionDTO.getDiaSemana())
+                .build();
+
+        HorarioExcepcion savedExcepcion = horarioExcepcionRepository.save(excepcion);
+        return ConverterUtil.horarioExcepcionToHorarioDTO(savedExcepcion);
+    }
+
+    /**
+     * Método para convertir de dayOfWeek a enum DiaSemana.
+     */
+    private DiaSemana convertDayOfWeekToDiaSemana(java.time.DayOfWeek dow) {
+        switch(dow) {
+            case MONDAY:
+                return DiaSemana.LUNES;
+            case TUESDAY:
+                return DiaSemana.MARTES;
+            case WEDNESDAY:
+                return DiaSemana.MIERCOLES;
+            case THURSDAY:
+                return DiaSemana.JUEVES;
+            case FRIDAY:
+                return DiaSemana.VIERNES;
+            case SATURDAY:
+                return DiaSemana.SABADO;
+            case SUNDAY:
+                return DiaSemana.DOMINGO;
+            default:
+                throw new IllegalArgumentException("No existe ningun dia llamado: " + dow);
+        }
+    }
 }

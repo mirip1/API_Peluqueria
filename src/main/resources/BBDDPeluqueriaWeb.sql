@@ -31,13 +31,22 @@ create table servicios (
     precio decimal(10 , 2 ) not null
 );
 
-create table horarios (
+create table horario_base (
     id int auto_increment primary key,
     dia_semana enum('LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO', 'DOMINGO') not null,
     hora_inicio time not null,
     hora_fin time not null,
     estado enum('DISPONIBLE', 'NO_DISPONIBLE') not null default 'DISPONIBLE'
-) ;
+);
+
+create table horario_excepcion (
+    id int auto_increment primary key,
+    fecha date not null,
+    hora_inicio time not null,
+    hora_fin time not null,
+    estado enum('DISPONIBLE', 'NO_DISPONIBLE') not null,
+    dia_semana enum('LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO', 'DOMINGO') not null
+);
 
 create table resenas (
     id int auto_increment primary key,
@@ -83,32 +92,31 @@ DELIMITER ;
 
 DELIMITER //
 
-CREATE TRIGGER trigger_cita_cancelada AFTER UPDATE ON citas
-FOR EACH ROW
-BEGIN
-	DECLARE dia VARCHAR(10);
-    IF NEW.estado = 'CANCELADA' AND OLD.estado <> 'CANCELADA' THEN
-        -- Convertir el día de la semana de la cita (usando DAYOFWEEK, donde 1 = domingo, 2 = lunes, etc.)
-        SET dia = CASE DAYOFWEEK(NEW.fecha_y_hora)
-                     WHEN 1 THEN 'DOMINGO'
-                     WHEN 2 THEN 'LUNES'
-                     WHEN 3 THEN 'MARTES'
-                     WHEN 4 THEN 'MIERCOLES'
-                     WHEN 5 THEN 'JUEVES'
-                     WHEN 6 THEN 'VIERNES'
-                     WHEN 7 THEN 'SABADO'
-                  END;
--- Actualizar el estado del horario correspondiente al día y la hora de la cita cancelada.
-UPDATE horarios 
-SET 
+create trigger trigger_cita_cancelada after update on citas
+for each row
+begin
+    declare dia varchar(10);
+    if NEW.estado = 'CANCELADA' and OLD.estado <> 'CANCELADA' then
+        set dia = case dayofweek(NEW.fecha_y_hora)
+                     when 1 then 'DOMINGO'
+                     when 2 then 'LUNES'
+                     when 3 then 'MAaRTES'
+                     when 4 then 'MIERCOLES'
+                     when 5 then 'JUEVES'
+                     when 6 then 'VIERNES'
+                     when 7 then 'SABADO'
+                  end;
+update horarios 
+set 
     estado = 'DISPONIBLE'
-WHERE
+where
     dia_semana = dia
-        AND hora_inicio = TIME(NEW.fecha_y_hora)
-    END IF;
-END;
+        and hora_inicio = time(NEW.fecha_y_hora);
+    end if;
+end;
 //
 DELIMITER ;
+
 
 
 -- Datos de prueba
@@ -116,12 +124,29 @@ DELIMITER ;
 insert into peluqueria (nombre, descripcion, ubicacion)
 values ('PeluqueriaEjemp', 'Peluqueria de prueba ', 'Calle Ejemplo, 123, Ciudad, Pais');
 
-INSERT INTO usuarios (nombre, apellidos, email, password, rol, fecha_creacion, baneado, telefono)
-VALUES ('Admin', 'Test', 'admin@example.com', '$2a$12$67UmkMD6wFegStulo66QQe6HE8VynOJ6UKrgh76ViQekruXoGxpai', 'ADMIN', CURRENT_TIMESTAMP, 0, '123456788');
+insert into usuarios (nombre, apellidos, email, password, rol, fecha_creacion, baneado, telefono)
+values ('Admin', 'Test', 'admin@example.com', '$2a$12$67UmkMD6wFegStulo66QQe6HE8VynOJ6UKrgh76ViQekruXoGxpai', 'ADMIN', current_timestamp, 0, '123456788');
 
-INSERT INTO servicios (nombre, precio) VALUES ('Corte de Pelo', 15.00);
-INSERT INTO servicios (nombre, precio) VALUES ('Tinte', 30.00);
-INSERT INTO servicios (nombre, precio) VALUES ('Peinado', 20.00);
+insert into servicios (nombre, precio) values ('Corte de Pelo', 15.00);
+insert into servicios (nombre, precio) values ('Tinte', 30.00);
+insert into servicios (nombre, precio) values ('Peinado', 20.00);
+
+-- Inserta horarios base iniciales
+
+INSERT INTO horario_base (dia_semana, hora_inicio, hora_fin, estado) VALUES 
+('LUNES', '08:00:00', '14:00:00', 'DISPONIBLE'),
+('LUNES', '16:00:00', '20:00:00', 'DISPONIBLE'),
+('MARTES', '08:00:00', '14:00:00', 'DISPONIBLE'),
+('MARTES', '16:00:00', '20:00:00', 'DISPONIBLE'),
+('MIERCOLES', '08:00:00', '14:00:00', 'DISPONIBLE'),
+('MIERCOLES', '16:00:00', '20:00:00', 'DISPONIBLE'),
+('JUEVES', '08:00:00', '14:00:00', 'DISPONIBLE'),
+('JUEVES', '16:00:00', '20:00:00', 'DISPONIBLE'),
+('VIERNES', '08:00:00', '14:00:00', 'DISPONIBLE'),
+('VIERNES', '16:00:00', '20:00:00', 'DISPONIBLE'),
+('SABADO', '09:00:00', '13:00:00', 'DISPONIBLE'),
+('DOMINGO', '10:00:00', '14:00:00', 'DISPONIBLE');
+
 
 
 

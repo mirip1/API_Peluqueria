@@ -25,8 +25,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "horarios")
-public class Horario {
+@Table(name = "horario_base")
+public class HorarioBase {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
