@@ -1,6 +1,8 @@
 package com.fct.peluqueria.web;
 
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,7 +49,9 @@ public class UsuarioController {
    */
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
-    return ResponseEntity.ok(usuarioService.login(loginDTO));
+    Map<String, String> response = new HashMap<>();
+    response.put("token", usuarioService.login(loginDTO));
+    return ResponseEntity.ok(response);
   }
 
   /**
