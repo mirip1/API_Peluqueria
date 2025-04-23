@@ -22,5 +22,6 @@ public class ResenaDTO {
   private String comentario;
   private Integer puntuacion;
   private LocalDateTime fecha;
+  private String nombreUsuario;
 
 }
