@@ -107,6 +107,7 @@ public class ConverterUtil {
           .comentario(resena.getComentario())
           .puntuacion(resena.getPuntuacion())
           .fecha(resena.getFecha())
+          .nombreUsuario(resena.getUsuario().getNombre() + " " + resena.getUsuario().getApellidos())
           .build();
   }
   
