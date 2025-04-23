@@ -17,6 +17,6 @@ public interface ResenaRepository extends JpaRepository<Resena, Integer> {
   @Query("SELECT r FROM Resena r WHERE r.usuario = :usuario ORDER BY r.fecha DESC")
   List<Resena> findByUsuario(@Param("usuario") Usuario usuario);
   
-  
+  boolean existsByUsuarioId(Integer usuarioId);
   
 }
