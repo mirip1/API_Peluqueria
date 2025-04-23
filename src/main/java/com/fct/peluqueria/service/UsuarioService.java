@@ -122,7 +122,7 @@ public class UsuarioService {
 
     // Password: mínimo 8 caracteres, una mayúscula, una minúscula, un número y un
     // carácter especial
-    if (!usuario.getPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")) {
+    if (!usuario.getPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&_-€#]).{8,}$")) {
       throw new IllegalArgumentException(
           "La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un carácter especial.");
     }
