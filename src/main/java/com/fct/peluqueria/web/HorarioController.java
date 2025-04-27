@@ -1,6 +1,7 @@
 package com.fct.peluqueria.web;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fct.peluqueria.dto.DisponibilidadDiaDTO;
 import com.fct.peluqueria.dto.HorarioDTO;
 import com.fct.peluqueria.service.HorarioService;
 
@@ -55,4 +57,16 @@ public class HorarioController {
         LocalDate fecha = LocalDate.parse(fechaStr);
         return ResponseEntity.ok(horarioService.addExcepcionHorario(excepcionDTO, fecha));
     }
-}
+    
+    /**
+     * Devuelve la la lista disponibilidad de cada deia de un mes en especifico
+     * 
+     * @param year  año
+     * @param month mes
+     * @return lista de disponibilidad por dia del mes
+     */
+    @GetMapping("/mes/{year}/{month}")
+    public ResponseEntity<List<DisponibilidadDiaDTO>> getMes(@PathVariable int year, @PathVariable int month) {
+      return ResponseEntity.ok(horarioService.obtenerDisponibilidadMes(year, month));
+    }
+  }

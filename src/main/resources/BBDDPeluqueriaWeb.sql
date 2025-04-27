@@ -90,33 +90,8 @@ end;
 //
 DELIMITER ;
 
-DELIMITER //
 
-create trigger trigger_cita_cancelada after update on citas
-for each row
-begin
-    declare dia varchar(10);
-    if NEW.estado = 'CANCELADA' and OLD.estado <> 'CANCELADA' then
-        set dia = case dayofweek(NEW.fecha_y_hora)
-                     when 1 then 'DOMINGO'
-                     when 2 then 'LUNES'
-                     when 3 then 'MAaRTES'
-                     when 4 then 'MIERCOLES'
-                     when 5 then 'JUEVES'
-                     when 6 then 'VIERNES'
-                     when 7 then 'SABADO'
-                  end;
-update horarios 
-set 
-    estado = 'DISPONIBLE'
-where
-    dia_semana = dia
-        and hora_inicio = time(NEW.fecha_y_hora);
-    end if;
-end;
-//
-DELIMITER ;
-
+drop trigger trigger_cita_cancelada;
 
 
 -- Datos de prueba
