@@ -16,7 +16,8 @@ import com.fct.peluqueria.models.Usuario;
  * Clase que se encarga de las operaciones a la BBDD de la tabla citas
  */
 public interface CitaRepository extends JpaRepository<Cita, Integer> {
-  
+  List<Cita> findAllByEstado(EstadoCita estado);
+
   @Query("SELECT c FROM Cita c WHERE c.usuario = :usuario AND c.estado = :estado")
   List<Cita> findByUsuarioAndEstado(@Param("usuario") Usuario usuario, @Param("estado") EstadoCita estado);
 
@@ -24,7 +25,7 @@ public interface CitaRepository extends JpaRepository<Cita, Integer> {
   List<Cita> findByFechaYHoraBetween(@Param("inicio") LocalDateTime inicio, @Param("fin") LocalDateTime fin);
 
   List<Cita> findByUsuarioId(Integer usuarioId);
-  
+
   Optional<Cita> findByUsuarioIdAndFechaYHoraAndEstado(Integer usuarioId, LocalDateTime fechaYHora, EstadoCita estado);
 
 }

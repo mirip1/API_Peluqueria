@@ -2,14 +2,17 @@ package com.fct.peluqueria.service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fct.peluqueria.constants.DiaSemana;
 import com.fct.peluqueria.converter.ConverterUtil;
+import com.fct.peluqueria.dto.DisponibilidadDiaDTO;
 import com.fct.peluqueria.dto.HorarioDTO;
 import com.fct.peluqueria.models.HorarioBase;
 import com.fct.peluqueria.models.HorarioExcepcion;
@@ -96,6 +99,22 @@ public class HorarioService {
 
         HorarioExcepcion savedExcepcion = horarioExcepcionRepository.save(excepcion);
         return ConverterUtil.horarioExcepcionToHorarioDTO(savedExcepcion);
+    }
+
+    /**
+     * Devuelve la la lista disponibilidad de cada deia de un mes en especifico
+     * 
+     * @param year  año
+     * @param month mes
+     * @return lista de disponibilidad por dia del mes
+     */
+    public List<DisponibilidadDiaDTO> obtenerDisponibilidadMes(int year, int month) {
+      YearMonth ym = YearMonth.of(year, month);
+      return IntStream.rangeClosed(1, ym.lengthOfMonth()).mapToObj(day -> {
+        LocalDate fecha = ym.atDay(day);
+        List<HorarioDTO> franjas = obtenerHorariosPorFecha(fecha);
+        return new DisponibilidadDiaDTO(fecha, franjas);
+      }).collect(Collectors.toList());
     }
 
     /**

@@ -1,7 +1,10 @@
 package com.fct.peluqueria.web;
 
+import java.security.Principal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,6 +58,16 @@ public class CitaController {
   @PutMapping("/{id}")
   public ResponseEntity<?> cancelarCita(@PathVariable Integer id) {
     citaService.cancelarCita(id);
+    return ResponseEntity.noContent().build();
+  }
+  
+  /**
+   * Borra totalmente una cita de la BBDD.
+   * Solo un usuario puede borrar SU propia cita activa.
+   */
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteCita(@PathVariable Integer id, Principal principal) {
+    citaService.eliminarCita(id, principal.getName());
     return ResponseEntity.noContent().build();
   }
 }
