@@ -9,15 +9,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fct.peluqueria.dto.ChangeEmailDTO;
+import com.fct.peluqueria.dto.ChangeEmailResponse;
+import com.fct.peluqueria.dto.ChangePasswordDTO;
 import com.fct.peluqueria.dto.LoginDTO;
 import com.fct.peluqueria.dto.RegistroDTO;
 import com.fct.peluqueria.dto.UsuarioDTO;
+import com.fct.peluqueria.security.JwtUtil;
 import com.fct.peluqueria.service.UsuarioService;
 
 /**
@@ -29,6 +35,9 @@ public class UsuarioController {
 
   @Autowired
   private UsuarioService usuarioService;
+  
+  @Autowired
+  private JwtUtil jwtUtil;
 
   /**
    * Metodo para registrarse
@@ -76,4 +85,65 @@ public class UsuarioController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no autenticado");
     }
   }
+
+  /**
+   * Metodo que cambia la contraseña actual de un Usuario, recibe la nueva
+   * contraseña y la antigua
+   */
+  @PutMapping("/password")
+  public ResponseEntity<?> changePassword(@RequestBody ChangePasswordDTO dto, Principal principal) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    if (authentication != null && authentication.isAuthenticated()) {
+      // Obtén el nombre de usuario (email) del objeto Authentication
+      String username = authentication.getName();
+      usuarioService.changePassword(username, dto);
+      return ResponseEntity.noContent().build();
+    } else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no autenticado");
+    }
+
+  }
+
+  /**
+   * Metodo para cambiar el email de un usuario
+   */
+  @PutMapping("/email")
+  public ResponseEntity<?> changeEmail(@RequestBody ChangeEmailDTO dto) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    if (authentication != null && authentication.isAuthenticated()) {
+      // Obtén el nombre de usuario (email) del objeto Authentication
+      UsuarioDTO updated = usuarioService.changeEmail(authentication.getName(), dto);
+      String newToken = jwtUtil.generateToken(updated.getEmail());
+      return ResponseEntity.ok(new ChangeEmailResponse(updated, newToken));
+    }
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no autenticado");
+  }
+
+  /**
+   * Metodo para eliminar un Usuario
+   */
+  @DeleteMapping
+  public ResponseEntity<?> deleteAccount() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    usuarioService.deleteAccount(authentication.getName());
+    return ResponseEntity.noContent().build();
+  }
+
+  /**
+   * Metodo para cambiar el telefono
+   */
+  @PutMapping("/telefono")
+  public ResponseEntity<?> changeTelefono(@RequestBody String telefono) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    if (authentication != null && authentication.isAuthenticated()) {
+      // Obtén el nombre de usuario (email) del objeto Authentication
+      usuarioService.changeTelefono(authentication.getName(), telefono);
+      return ResponseEntity.ok(null);
+    }
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no autenticado");
+  }
+  
 }
