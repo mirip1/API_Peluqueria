@@ -3,16 +3,23 @@ package com.fct.peluqueria.service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.fct.peluqueria.converter.ConverterUtil;
+import com.fct.peluqueria.dto.ChangeEmailDTO;
+import com.fct.peluqueria.dto.ChangePasswordDTO;
 import com.fct.peluqueria.dto.LoginDTO;
 import com.fct.peluqueria.dto.RegistroDTO;
 import com.fct.peluqueria.dto.UsuarioDTO;
 import com.fct.peluqueria.models.Usuario;
 import com.fct.peluqueria.repository.UsuarioRepository;
 import com.fct.peluqueria.security.JwtUtil;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class UsuarioService {
@@ -94,6 +101,74 @@ public class UsuarioService {
     return usuarioDTO;
   }
 
+  /**
+   * Metodo para cambiar la contraseña de un Usuario
+   * 
+   * @param email email del usuario a cambiar
+   * @param dto   deto con la antigua contraseña y la nueva
+   */
+  public void changePassword(String email, ChangePasswordDTO dto) {
+    Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
+    if (!passwordEncoder.matches(dto.getOldPassword(), usuario.getPassword())) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Contraseña antigua incorrecta");
+    }
+    usuario.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+  }
+
+  /**
+   * Metodo para cambiar el email de un usuario
+   * 
+   * @param email actual del usuario
+   * @param dto   informacion con el email nuevo a cambiar
+   * @return el usuario con el email cambiado
+   */
+  @Transactional
+  public UsuarioDTO changeEmail(String email, ChangeEmailDTO dto) {
+    if (usuarioRepository.existsByEmail(dto.getNewEmail())) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email en uso");
+    }
+    Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
+    if (!dto.getNewEmail().matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+      throw new IllegalArgumentException("El correo electrónico no es válido.");
+    }
+    usuario.setEmail(dto.getNewEmail());
+    return ConverterUtil.usuarioToUsuarioDTO(usuario);
+  }
+
+  /**
+   * Metodo para borrar un Usuario
+   * 
+   * @param email el email del usuario a eliminar
+   */
+  @Transactional
+  public void deleteAccount(String email) {
+    Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
+    usuarioRepository.delete(usuario);
+  }
+
+  /**
+   * Metodo para cambiar el telefono
+   * 
+   * @param email
+   * @param telefono nuevo a cambiar
+   */
+  @Transactional
+  public void changeTelefono(String email, String telefono) {
+    Usuario u = usuarioRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
+
+    String nuevo = telefono;
+    if (nuevo == null || !nuevo.matches("^[679]\\d{8}$")) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+          "El teléfono debe tener 9 dígitos y comenzar por 6, 7 o 9.");
+    }
+    u.setTelefono(nuevo);
+  }
+
+  /**
+   * Método que comprueba si la informacion de un Usuario es valida
+   * 
+   * @param usuario usuario a comprobar
+   */
   private void checkUsuario(Usuario usuario) {
     if (usuario == null) {
       throw new IllegalArgumentException("El usuario no puede ser nulo.");

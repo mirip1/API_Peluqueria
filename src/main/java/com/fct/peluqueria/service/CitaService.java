@@ -95,10 +95,7 @@ public class CitaService {
     citaRepository.delete(cita);
   }
 
-  /**
-   * Cada día a medianoche (00:00) actualiza citas activas a finalizadas cuya
-   * fechaYHora esté antes de ahora.
-   */
+
 //  @Scheduled(cron = "0 0 0 * * *", zone = "Europe/Madrid")
   @Scheduled(fixedRate = 300000)
   @Transactional
