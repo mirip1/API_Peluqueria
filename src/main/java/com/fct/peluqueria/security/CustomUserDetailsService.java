@@ -28,7 +28,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 
       List<GrantedAuthority> authorities;
       if ("Rol.ADMIN".equalsIgnoreCase(usuario.getRol().toString())) {
-//        System.out.println("llega hasta aqui :D");
         authorities = List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
       } else {
         authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));

@@ -1,14 +1,17 @@
 package com.fct.peluqueria.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.fct.peluqueria.constants.Rol;
 import com.fct.peluqueria.converter.ConverterUtil;
 import com.fct.peluqueria.dto.ChangeEmailDTO;
 import com.fct.peluqueria.dto.ChangePasswordDTO;
@@ -73,15 +76,18 @@ public class UsuarioService {
     if (optUsuario.isEmpty()) {
       throw new RuntimeException("Usuario no encontrado");
     }
-
     Usuario usuario = optUsuario.get();
+    
+    if(usuario.getBaneado()) {
+      throw new RuntimeException("Usuario baneado");
+    }
 
     if (!passwordEncoder.matches(loginDTO.getPassword(), usuario.getPassword())) {
       throw new RuntimeException("Credenciales incorrectas");
     }
 
     // Generar token JWT. Aquí usamos el email como subject.
-    String token = jwtUtil.generateToken(usuario.getEmail());
+    String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getRol());
 
     return token;
   }
@@ -162,6 +168,32 @@ public class UsuarioService {
           "El teléfono debe tener 9 dígitos y comenzar por 6, 7 o 9.");
     }
     u.setTelefono(nuevo);
+  }
+  
+  /**
+   * Método que devuelve Todos los usuarios de la BBDD
+   * 
+   * @return
+   */
+  public List<UsuarioDTO> listAllUsuarios() {
+    return usuarioRepository.findByRol(Rol.CLIENTE).stream().map(ConverterUtil::usuarioToUsuarioDTO).toList();
+  }
+
+  /**
+   * 
+   * @param id
+   * @throws NotFoundException
+   */
+  @Transactional
+  public void banearUsuarioById(Integer id) throws NotFoundException {
+    Usuario u = usuarioRepository.findById(id).orElseThrow(() -> new NotFoundException());
+    u.setBaneado(true);
+  }
+
+  @Transactional
+  public void desbanearUsuarioById(Integer id) throws NotFoundException {
+    Usuario u = usuarioRepository.findById(id).orElseThrow(() -> new NotFoundException());
+    u.setBaneado(false);
   }
 
   /**

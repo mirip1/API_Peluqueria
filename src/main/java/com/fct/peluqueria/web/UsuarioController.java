@@ -115,7 +115,7 @@ public class UsuarioController {
     if (authentication != null && authentication.isAuthenticated()) {
       // Obtén el nombre de usuario (email) del objeto Authentication
       UsuarioDTO updated = usuarioService.changeEmail(authentication.getName(), dto);
-      String newToken = jwtUtil.generateToken(updated.getEmail());
+      String newToken = jwtUtil.generateToken(updated.getEmail(), updated.getRol());
       return ResponseEntity.ok(new ChangeEmailResponse(updated, newToken));
     }
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no autenticado");

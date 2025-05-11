@@ -1,5 +1,7 @@
 package com.fct.peluqueria.dto;
 
+import java.time.LocalDateTime;
+
 import com.fct.peluqueria.constants.Rol;
 
 import lombok.AllArgsConstructor;
@@ -24,5 +26,6 @@ public class UsuarioDTO {
   private String telefono;
   private Rol rol;
   private Boolean baneado;
+  private LocalDateTime fecha;
 
 }

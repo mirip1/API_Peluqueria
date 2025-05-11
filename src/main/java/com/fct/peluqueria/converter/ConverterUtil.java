@@ -62,6 +62,7 @@ public class ConverterUtil {
         .telefono(usuario.getTelefono())
         .rol(usuario.getRol())
         .baneado(usuario.getBaneado())
+        .fecha(usuario.getFechaCreacion())
         .build();
   }
   
