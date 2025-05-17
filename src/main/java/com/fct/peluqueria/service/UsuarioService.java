@@ -113,6 +113,7 @@ public class UsuarioService {
    * @param email email del usuario a cambiar
    * @param dto   deto con la antigua contraseña y la nueva
    */
+  @Transactional
   public void changePassword(String email, ChangePasswordDTO dto) {
     Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
     if (!passwordEncoder.matches(dto.getOldPassword(), usuario.getPassword())) {
