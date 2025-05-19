@@ -27,5 +27,8 @@ public interface CitaRepository extends JpaRepository<Cita, Integer> {
   List<Cita> findByUsuarioId(Integer usuarioId);
 
   Optional<Cita> findByUsuarioIdAndFechaYHoraAndEstado(Integer usuarioId, LocalDateTime fechaYHora, EstadoCita estado);
+  
+  @Query("SELECT c FROM Cita c JOIN FETCH c.usuario")
+  List<Cita> findAllWithUsuario();
 
 }

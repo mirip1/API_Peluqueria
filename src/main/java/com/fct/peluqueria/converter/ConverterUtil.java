@@ -140,6 +140,7 @@ public class ConverterUtil {
           .fechaYHora(cita.getFechaYHora())
           .estado(cita.getEstado() != null ? cita.getEstado().name() : null)
           .usuarioId(cita.getUsuario().getId())
+          .usuarioEmail(cita.getUsuario().getEmail()) 
           .build();
   }
 
