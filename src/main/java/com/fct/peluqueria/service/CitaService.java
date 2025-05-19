@@ -95,6 +95,14 @@ public class CitaService {
     citaRepository.delete(cita);
   }
 
+  /**
+   * Recoge todas las citas existentes
+   * 
+   * @return lista de todas las citas
+   */
+  public List<CitaDTO> getAllCitas() {
+    return citaRepository.findAll().stream().map(ConverterUtil::citaToCitaDTO).collect(Collectors.toList());
+  }
 
 //  @Scheduled(cron = "0 0 0 * * *", zone = "Europe/Madrid")
   @Scheduled(fixedRate = 300000)

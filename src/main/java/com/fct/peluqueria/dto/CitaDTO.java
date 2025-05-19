@@ -21,5 +21,5 @@ public class CitaDTO {
   private Integer usuarioId;
   private LocalDateTime fechaYHora;
   private String estado;
-
+  private String usuarioEmail;
 }
