@@ -20,5 +20,5 @@ import lombok.Setter;
 public class DisponibilidadDiaDTO {
   private LocalDate fecha;
   private List<HorarioDTO> franjas;
-
+  List<HorarioDTO> excepciones;
 }

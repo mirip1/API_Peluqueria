@@ -16,4 +16,19 @@ public interface HorarioBaseRepository extends JpaRepository<HorarioBase, Intege
 
   @Query("SELECT hb FROM HorarioBase hb WHERE hb.diaSemana = :diaSemana")
   List<HorarioBase> findByDiaSemana(@Param("diaSemana") DiaSemana diaSemana);
+  
+  @Query("""
+      SELECT h FROM HorarioBase h
+      ORDER BY
+        CASE h.diaSemana
+          WHEN 'LUNES' THEN 1
+          WHEN 'MARTES' THEN 2
+          WHEN 'MIERCOLES' THEN 3
+          WHEN 'JUEVES' THEN 4
+          WHEN 'VIERNES' THEN 5
+          WHEN 'SABADO' THEN 6
+          WHEN 'DOMINGO' THEN 7
+        END
+      """)
+  List<HorarioBase> findAllOrderedByDiaSemana();
 }

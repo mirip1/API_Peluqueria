@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,6 +60,15 @@ public class HorarioController {
     }
     
     /**
+     * @return el horario semanal base
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/base")
+    public ResponseEntity<List<HorarioDTO>> getHorarioBase() {
+      List<HorarioDTO> base = horarioService.obtenerHorarioBase();
+      return ResponseEntity.ok(base);
+    }
+    /**
      * Devuelve la la lista disponibilidad de cada deia de un mes en especifico
      * 
      * @param year  año
@@ -68,5 +78,37 @@ public class HorarioController {
     @GetMapping("/mes/{year}/{month}")
     public ResponseEntity<List<DisponibilidadDiaDTO>> getMes(@PathVariable int year, @PathVariable int month) {
       return ResponseEntity.ok(horarioService.obtenerDisponibilidadMes(year, month));
+    }
+    
+    /**
+     * Crea un nuevo intervalo para horario base
+     * @param horarioDTO intervalo
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/base")
+    public ResponseEntity<HorarioDTO> createHorarioBase(@RequestBody HorarioDTO horarioDTO) {
+      HorarioDTO created = horarioService.createHorarioBase(horarioDTO);
+      return ResponseEntity.ok(created);
+    }
+    
+    /**
+     * @param id del horario a borrar
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/base/{id}")
+    public ResponseEntity<Void> deleteHorarioBase(@PathVariable Integer id) {
+      horarioService.deleteHorarioBase(id);
+      return ResponseEntity.noContent().build();
+    }
+    
+    /**
+     * @param id del horario excepcion a borrar
+     * @return
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/excepcion/{id}")
+    public ResponseEntity<Void> deleteExcepcion(@PathVariable Integer id) {
+      horarioService.deleteExcepcion(id);
+      return ResponseEntity.noContent().build();
     }
   }
