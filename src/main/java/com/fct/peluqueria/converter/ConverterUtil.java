@@ -180,6 +180,20 @@ public class ConverterUtil {
         .estado(horario.getEstado() != null ? horario.getEstado() : null).build();
   }
   
+  /**
+   * Convierte un objeto HorarioDTO a HorarioBase.
+   * @param el Objeto a convertir
+   * @return HorarioBase relleno
+   */
+  public static HorarioBase horarioDTOToHorarioBase(HorarioDTO dto) {
+    return HorarioBase.builder()
+        .diaSemana(dto.getDiaSemana())
+        .horaInicio(parseLocalTime(dto.getHoraInicio()))
+        .horaFin(parseLocalTime(dto.getHoraFin()))
+        .estado(dto.getEstado())
+        .build();
+  }
+
   
   /**
    * Convierte un objeto HorarioExcepcion a HorarioDTO.
