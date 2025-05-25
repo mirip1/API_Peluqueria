@@ -41,6 +41,7 @@ public class SecurityConfig {
     .cors(Customizer.withDefaults())   
     .authorizeHttpRequests(auth -> auth
         .requestMatchers(HttpMethod.GET, "/api/peluqueria").permitAll()
+        .requestMatchers(HttpMethod.POST, "/api/usuarios/forgot-password").permitAll()
         .requestMatchers("/api/usuarios/**").permitAll().anyRequest().authenticated())
         .formLogin(form -> form.usernameParameter("email").defaultSuccessUrl("/api/usuarios/profile", true))
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

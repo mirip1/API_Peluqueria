@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fct.peluqueria.dto.ChangeEmailDTO;
@@ -144,6 +145,17 @@ public class UsuarioController {
       return ResponseEntity.ok(null);
     }
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no autenticado");
+  }
+  
+  /**
+   * metodo para cambiar la contraseña a alguien que se le ha olvidado
+   * @param email
+   * @return
+   */
+  @PostMapping("/forgot-password")
+  public ResponseEntity<Void> forgotPassword(@RequestParam("email") String email) {
+      usuarioService.resetearPasswordEmail(email);
+      return ResponseEntity.noContent().build();
   }
   
 }

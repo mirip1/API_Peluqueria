@@ -1,5 +1,6 @@
 package com.fct.peluqueria.service;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,12 +22,17 @@ import com.fct.peluqueria.dto.UsuarioDTO;
 import com.fct.peluqueria.models.Usuario;
 import com.fct.peluqueria.repository.UsuarioRepository;
 import com.fct.peluqueria.security.JwtUtil;
+import com.fct.peluqueria.service.notifications.NotificationService;
 
 import jakarta.transaction.Transactional;
 
 @Service
 public class UsuarioService {
-
+  
+  private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  
+  private static final SecureRandom RANDOM = new SecureRandom();
+  
   @Autowired
   private UsuarioRepository usuarioRepository;
 
@@ -35,6 +41,10 @@ public class UsuarioService {
 
   @Autowired
   private JwtUtil jwtUtil;
+  
+  @Autowired
+  private NotificationService notifier;
+
 
 //  @Autowired
 //  private JwtUtil jwtUtil;
@@ -191,10 +201,30 @@ public class UsuarioService {
     u.setBaneado(true);
   }
 
+  /**
+   * metodo que desbanea a un ususario
+   * @param id
+   * @throws NotFoundException
+   */
   @Transactional
   public void desbanearUsuarioById(Integer id) throws NotFoundException {
     Usuario u = usuarioRepository.findById(id).orElseThrow(() -> new NotFoundException());
     u.setBaneado(false);
+  }
+  
+  /**
+   * Metodo para cambiar la contraseña y 
+   * @param email
+   */
+  @Transactional
+  public void resetearPasswordEmail(String email) {
+      Usuario u = usuarioRepository.findByEmail(email)
+          .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email no registrado"));
+      String nuevoPass = generateRandom(12);
+
+      u.setPassword(passwordEncoder.encode(nuevoPass));
+      usuarioRepository.save(u);
+      notifier.sendResetPasswordEmail(u, nuevoPass);
   }
 
   /**
@@ -211,7 +241,7 @@ public class UsuarioService {
     if (!usuario.getTelefono().matches("^[679]\\d{8}$")) {
       throw new IllegalArgumentException("El número de teléfono debe tener 9 dígitos y comenzar por 6, 7 o 9.");
     }
-
+    
     // Nombre: Solo letras (incluye tildes y mayúscula inicial)
     if (!usuario.getNombre().matches("^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]{1,29}$")) {
       throw new IllegalArgumentException("El nombre debe comenzar con mayúscula y solo contener letras.");
@@ -235,6 +265,20 @@ public class UsuarioService {
           "La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un carácter especial.");
     }
 
+  }
+  
+  /**
+   * Genera una cadena aleatoria de longitud dada usando caracteres alfanuméricos.
+   * @param length longitud de la cadena a generar
+   * @return cadena aleatoria
+   */
+  public static String generateRandom(int length) {
+      StringBuilder sb = new StringBuilder(length);
+      for (int i = 0; i < length; i++) {
+          int idx = RANDOM.nextInt(CHARACTERS.length());
+          sb.append(CHARACTERS.charAt(idx));
+      }
+      return sb.toString();
   }
 
 }

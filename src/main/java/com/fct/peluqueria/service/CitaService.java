@@ -20,6 +20,7 @@ import com.fct.peluqueria.models.Cita;
 import com.fct.peluqueria.models.Usuario;
 import com.fct.peluqueria.repository.CitaRepository;
 import com.fct.peluqueria.repository.UsuarioRepository;
+import com.fct.peluqueria.service.notifications.NotificationService;
 
 import jakarta.transaction.Transactional;
 
@@ -31,6 +32,9 @@ public class CitaService {
 
   @Autowired
   private UsuarioRepository usuarioRepository;
+  
+  @Autowired
+  private NotificationService notifier;
 
   /**
    * Crea una nueva cita a partir del CitaDTO recibido. Si no se especifica el
@@ -75,6 +79,7 @@ public class CitaService {
     Cita cita = citaRepository.findById(id).orElseThrow(() -> new RuntimeException("Cita no encontrada"));
     cita.setEstado(EstadoCita.CANCELADA);
     citaRepository.save(cita);
+    notifier.sendCancellationNotice(cita);
   }
 
   /**
