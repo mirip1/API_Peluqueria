@@ -35,12 +35,12 @@ public class NotificationService {
    */
   @Scheduled(cron = "0 0 8 * * *", zone = "Europe/Madrid")
   public void sendTomorrowReminders() {
-    LocalDate mañana = LocalDate.now(ZoneId.of("Europe/Madrid")).plusDays(1);
+    LocalDate manana = LocalDate.now(ZoneId.of("Europe/Madrid")).plusDays(1);
     // buscar citas activas para mañana
-    List<Cita> citasMañana = citaRepository.findAllByEstadoAndFechaYHoraBetween(EstadoCita.ACTIVA,
-        mañana.atStartOfDay(), mañana.plusDays(1).atStartOfDay());
+    List<Cita> citasManana = citaRepository.findAllByEstadoAndFechaYHoraBetween(EstadoCita.ACTIVA,
+        manana.atStartOfDay(), manana.plusDays(1).atStartOfDay());
 
-    for (Cita c : citasMañana) {
+    for (Cita c : citasManana) {
       String telefono = "+34" + c.getUsuario().getTelefono();
       String hora = c.getFechaYHora().toLocalTime().toString();
       String fecha = c.getFechaYHora().toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));

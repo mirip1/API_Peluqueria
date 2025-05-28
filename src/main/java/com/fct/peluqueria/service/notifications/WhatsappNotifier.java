@@ -25,7 +25,7 @@ public class WhatsappNotifier {
     Twilio.init(accountSid, authToken);
   }
   /**
-   * metodo que emvia un whatsapp
+   * metodo que envia un whatsapp
    * @param toWhatsapp
    * @param body
    */
