@@ -41,6 +41,7 @@ public class SecurityConfig {
     .cors(Customizer.withDefaults())   
     .authorizeHttpRequests(auth -> auth
         .requestMatchers(HttpMethod.GET, "/api/peluqueria").permitAll()
+        .requestMatchers(HttpMethod.GET, "/api/resenas").permitAll()
         .requestMatchers(HttpMethod.POST, "/api/usuarios/forgot-password").permitAll()
         .requestMatchers("/api/usuarios/**").permitAll().anyRequest().authenticated())
         .formLogin(form -> form.usernameParameter("email").defaultSuccessUrl("/api/usuarios/profile", true))
@@ -53,7 +54,11 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration cfg = new CorsConfiguration();
-    cfg.setAllowedOrigins(List.of("http://localhost:4200"));
+    cfg.setAllowedOrigins(List.of(
+        "http://localhost:4200",
+        "https://mivel.eu",
+        "https://www.mivel.eu"
+    ));
     cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
     cfg.setAllowedHeaders(List.of("*"));
     cfg.setAllowCredentials(true);
