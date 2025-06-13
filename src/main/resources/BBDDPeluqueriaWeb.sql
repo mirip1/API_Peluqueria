@@ -91,8 +91,6 @@ end;
 DELIMITER ;
 
 
-drop trigger trigger_cita_cancelada;
-
 
 -- Datos de prueba
 
